@@ -11,6 +11,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text LocalScoreText;
     public Text BestScoreText;
     public GameObject GameOverText;
 
@@ -28,7 +29,8 @@ public class MainManager : MonoBehaviour
 
     private void WriteBestScores()
     {
-        BestScoreText.text = $"Best Score {ScoreManager.bestScore}";
+        LocalScoreText.text = $"Your best try:{ScoreManager.playerName}: {ScoreManager.bestScore}";
+        BestScoreText.text = $"Best Score{ScoreManager.Instance.bestPlayer.name}: {ScoreManager.Instance.bestPlayer.bestScore}";
     }
 
     private void GenerateBricks()
@@ -88,6 +90,7 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        SetBestScore();
     }
 
     public void SetBestScore()
@@ -96,7 +99,7 @@ public class MainManager : MonoBehaviour
         {
             ScoreManager.bestScore = m_Points;
             WriteBestScores();
-            if (m_GameOver)
+            if ( ScoreManager.Instance.bestPlayer.bestScore < m_Points)
             {
                 ScoreManager.Instance.WriteToJson();
             }

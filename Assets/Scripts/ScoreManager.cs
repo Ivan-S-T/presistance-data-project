@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using System;
 
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance;
     public static int bestScore;
-    public string playerName;
+    public static string playerName="you";
+    public Text scoreText;
+
     string jsonPath;
 
     public InputField inputField;
@@ -32,7 +35,14 @@ public class ScoreManager : MonoBehaviour
     {
         jsonPath = Application.persistentDataPath + "/bestScore.json";
 
+        
+        SetScoreText();
+    }
+
+    private void SetScoreText()
+    {
         bestPlayer = ReadFromJson();
+        scoreText.text = $"Best Score:{bestPlayer.name}:{bestPlayer.bestScore}";
     }
 
     [System.Serializable]
@@ -59,7 +69,7 @@ public class ScoreManager : MonoBehaviour
 
     public void WriteToJson()
     {
-        BestPlayerData bestPlayerData = new BestPlayerData(name,bestScore);
+        BestPlayerData bestPlayerData = new BestPlayerData(playerName,bestScore);
 
 
         string json = JsonUtility.ToJson(bestPlayerData);
@@ -70,7 +80,8 @@ public class ScoreManager : MonoBehaviour
     {
         if (File.Exists(jsonPath))
         {
-            BestPlayerData bestPlayerData = JsonUtility.FromJson<BestPlayerData>(jsonPath);
+            string jsonText = File.ReadAllText(jsonPath);
+            BestPlayerData bestPlayerData = JsonUtility.FromJson<BestPlayerData>(jsonText);
             return bestPlayerData;
         }
         return new BestPlayerData();
