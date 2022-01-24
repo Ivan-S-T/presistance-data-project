@@ -11,6 +11,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    public Text BestScoreText;
     public GameObject GameOverText;
 
     private bool m_Started = false;
@@ -19,6 +20,18 @@ public class MainManager : MonoBehaviour
     private bool m_GameOver = false;
 
     void Start()
+    {
+        GenerateBricks();
+        WriteBestScores();
+       
+    }
+
+    private void WriteBestScores()
+    {
+        BestScoreText.text = $"Best Score {ScoreManager.bestScore}";
+    }
+
+    private void GenerateBricks()
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
@@ -57,6 +70,10 @@ public class MainManager : MonoBehaviour
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
+            else if (Input.GetKeyDown(KeyCode.M))
+            {
+                SceneManager.LoadScene(0);
+            }
         }
     }
 
@@ -64,11 +81,25 @@ public class MainManager : MonoBehaviour
     {
         m_Points += point;
         ScoreText.text = $"Score : {m_Points}";
+        SetBestScore();
     }
 
     public void GameOver()
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    public void SetBestScore()
+    {
+        if (m_Points > ScoreManager.bestScore)
+        {
+            ScoreManager.bestScore = m_Points;
+            WriteBestScores();
+            if (m_GameOver)
+            {
+                ScoreManager.Instance.WriteToJson();
+            }
+        }
     }
 }
